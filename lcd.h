@@ -21,6 +21,7 @@
 #define sbit(reg,bit)	reg |= (1<<bit)			// Macro defined for Setting a bit of any register.
 #define cbit(reg,bit)	reg &= ~(1<<bit)		// Macro defined for Clearing a bit of any register.
 
+//Defining functions
 void init_ports();
 void lcd_reset();
 void lcd_init();
@@ -41,7 +42,8 @@ unsigned int million;
 	* Function Name:	lcd_port_config
 	* Input:			NONE
 	* Output:			NONE
-	* Logic:			Function to configure LCD port
+	* Logic:			Function to configure LCD port and setting all LCD pins except
+                PORTC to logic 0
 	* Example Call:		servoPan_pin_config()
 	*
 	*/
@@ -52,13 +54,26 @@ void lcd_port_config (void)
  PORTC = PORTC & 0x80; // all the LCD pins are set to logic 0 except PORTC 7
 }
 
-//Function to Initialize PORTS
+/*
+* Function Name:	port_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to Initialize PORTS
+* Example Call:		port_init()
+*
+*/
 void port_init()
 {
 	lcd_port_config();
 }
 
-//Function to Reset LCD
+/*
+* Function Name:	lcd_set_4bit
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to Reset LCD
+* Example Call:		lcd_set_4bit()
+*/
 void lcd_set_4bit()
 {
 	_delay_ms(1);
@@ -96,11 +111,15 @@ void lcd_set_4bit()
 	sbit(lcd_port,EN);				//Set Enable Pin
 	_delay_ms(1);					//Delay
 	cbit(lcd_port,EN);				//Clear Enable Pin
-
-	
 }
 
-//Function to Initialize LCD
+/*
+* Function Name:	lcd_set_4bit
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to Initialize LCD
+* Example Call:		lcd_set_4bit()
+*/
 void lcd_init()
 {
 	_delay_ms(1);
@@ -110,11 +129,16 @@ void lcd_init()
 	lcd_wr_command(0x06);
 	lcd_wr_command(0x0E);
 	lcd_wr_command(0x80);
-		
+
 }
 
-	 
-//Function to Write Command on LCD
+/*
+* Function Name:	lcd_wr_command
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to Write Command on LCD
+* Example Call:		lcd_wr_command()
+*/
 void lcd_wr_command(unsigned char cmd)
 {
 	unsigned char temp;
@@ -127,7 +151,7 @@ void lcd_wr_command(unsigned char cmd)
 	sbit(lcd_port,EN);
 	_delay_ms(5);
 	cbit(lcd_port,EN);
-	
+
 	cmd = cmd & 0x0F;
 	cmd = cmd<<4;
 	lcd_port &= 0x0F;
@@ -139,7 +163,13 @@ void lcd_wr_command(unsigned char cmd)
 	cbit(lcd_port,EN);
 }
 
-//Function to Write Data on LCD
+/*
+* Function Name:	lcd_wr_char
+* Input:			char
+* Output:			NONE
+* Logic:			Function to Write Data on LCD
+* Example Call:		lcd_wr_char(char l)
+*/
 void lcd_wr_char(char letter)
 {
 	char temp;
@@ -164,15 +194,25 @@ void lcd_wr_char(char letter)
 	cbit(lcd_port,EN);
 }
 
-
-//Function to bring cursor at home position
+/*
+* Function Name:	lcd_set_4bit
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to bring cursor at home position
+* Example Call:		lcd_set_4bit()
+*/
 void lcd_home()
 {
 	lcd_wr_command(0x80);
 }
 
-
-//Function to Print String on LCD
+/*
+* Function Name:	lcd_string
+* Input:			char *
+* Output:			NONE
+* Logic:			Function to Print String on LCD
+* Example Call:		lcd_string(char *s)
+*/
 void lcd_string(char *str)
 {
 	while(*str != '\0')
@@ -182,7 +222,15 @@ void lcd_string(char *str)
 	}
 }
 
-//Position the LCD cursor at "row", "column".
+
+
+/*
+* Function Name:	lcd_cursor
+* Input:			char, char
+* Output:			NONE
+* Logic:			Position the LCD cursor at "row", "column".
+* Example Call:		lcd_cursor(char r,char c)
+*/
 
 void lcd_cursor (char row, char column)
 {
@@ -195,7 +243,13 @@ void lcd_cursor (char row, char column)
 	}
 }
 
-//Function To Print Any input value upto the desired digit on LCD
+/*
+* Function Name:	lcd_cursor
+* Input:			char, char, unsigned int, int
+* Output:			NONE
+* Logic:			Function To Print Any input value upto the desired digit on LCD
+* Example Call:		lcd_cursor(char r,char c, unsigned int v, int d)
+*/
 void lcd_print (char row, char coloumn, unsigned int value, int digits)
 {
 	unsigned char flag=0;
@@ -243,5 +297,5 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 	{
 		lcd_wr_char('E');
 	}
-	
+
 }
