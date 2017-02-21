@@ -48,7 +48,7 @@ SIGNAL(INT1_vect)
 		else {	// voltage drop, stop time measurement
 			up = 0;
                         // convert from time to distance(millimeters): d = [ time_s * 340m/s ] / 2 = time_us/58
-			result = (timerCounter * 256 + TCNT0) / 580;
+			result = (timerCounter * 256 + TCNT0) / 773;
 			running = 0;
 		}
 	}
@@ -63,4 +63,18 @@ void sonar() {
 	running = 1;  // sonar launched
 	_delay_us(20);
 	PORTD &= 0xFE; // clear 
+}
+
+void ultrasonic_init()
+{
+	DDRD = 0x01; // PB0 output - connected to Trig
+	PORTD = 0x00; // clear
+	// turn on interrupts for INT1, connect Echo to INT1
+	EICRA |= (0 << ISC11) | (1 << ISC10); // enable interrupt on any(rising/droping) edge
+	EIMSK |= (1 << INT1);      // Turns on INT1
+	// setup 8 bit timer & enable interrupts, timer increments to 255 and interrupts on overflow
+	TCCR0B = (0<<CS02)|(0<<CS01)|(1<<CS00); // select internal clock with no prescaling
+	TCNT0 = 0; // reset counter to zero
+	TIMSK0 = 1<<TOIE0; // enable timer interrupt
+	sei(); // enable all(global) interrupts
 }
