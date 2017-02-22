@@ -15,7 +15,7 @@
 #define INSTR_PER_MS 14745.6          // instructions per millisecond
 #define MAX_RESP_TIME_MS 20      			// maximum response time in milliseconds
 
-volatile long result = 0;
+volatile uint16_t result = 0;
 volatile unsigned char up = 0;
 volatile unsigned char running = 0;
 volatile uint32_t timerCounter = 0;
