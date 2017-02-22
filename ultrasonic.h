@@ -1,8 +1,8 @@
 /*
 * Project Name: 	e-Yantra Project
 * Author List: 		Karan Mamaniya
-* Filename: 			ultrasonic.h
-* Functions:			sonar() , ultrasonic_init()
+* Filename: 		ultrasonic.h
+* Functions:		sonar_timer_init(), sonar_port_init(), sonar() , ultrasonic_init() , 
 * Global Variables:	result,up,running,timerCounter
 *
 */
@@ -21,11 +21,55 @@ volatile unsigned char running = 0;
 volatile uint32_t timerCounter = 0;
 
 /*
+* Function Name:	sonar_timer_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Configure Timer 0 in 8 bit counter mode
+* Example call:		sonar_timer_init()
+*/
+void sonar_timer_init()
+{
+	// setup 8 bit timer & enable interrupts, timer increments to 255 and interrupts on overflow
+	TCCR0B = (0<<CS02)|(0<<CS01)|(1<<CS00); // select internal clock
+	TCNT0 = 0; // reset counter to zero
+	TIMSK0 = 1<<TOIE0; // enable timer interrupt
+}
+
+
+/*
+* Function Name:	sonar_timer_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Configure Timer 0 in 8 bit counter mode
+* Example call:		sonar_port_init()
+*/
+void sonar_port_init()
+{
+	DDRD = 0x01; // PB0 output - connected to Trig
+	PORTD = 0x00; // clear
+}
+
+
+/*
+* Function Name:	sonar_interrup_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Configure INT1 to invoke ISR whenever a change of state
+* Example call:		sonar_interrupt_init()
+*/
+void sonar_interrupt_init()
+{
+	EICRA |= (0 << ISC11) | (1 << ISC10); // to enable interrupt on change of state
+	EIMSK |= (1 << INT1);      // Turns on INT1
+}
+
+/*
 * Interrupt Name:	TIMER0 Overflow Interrupt
 * Input:			Trigger
 * Output:			NONE
 * Logic:			Timer overflow interrupt is used each time when timer value passes 255
 */
+
 
 SIGNAL(TIMER0_OVF_vect)
 {
@@ -45,14 +89,15 @@ SIGNAL(TIMER0_OVF_vect)
 	}
 }
 
+
+
 /*
 * Interrupt Name:	External Interrupt 1
 * Input:			Trigger
 * Output:			NONE
-* Logic:      Logic for mesurement of time during different phases
+* Logic:      Logic for measurement of time during different phases
 							of Sonar usage
 */
-
 SIGNAL(INT1_vect)
 {
 	if (running)
@@ -70,6 +115,9 @@ SIGNAL(INT1_vect)
 		}
 	}
 }
+
+
+
 /*
 * Function Name:	sonar
 * Input:			NONE
@@ -78,8 +126,8 @@ SIGNAL(INT1_vect)
 * Example Call:		sonar()
 */
 void sonar() {
-	lcd_cursor(1,1);
-	lcd_string("Sonar start");
+	//lcd_cursor(1,1);
+	//lcd_string("Sonar start");
 	PORTD &= 0xFE; // clear to zero for 1 microsecond
 	_delay_us(1);
 	PORTD |= 0x01; // set high for 10 microseconds
@@ -87,6 +135,8 @@ void sonar() {
 	_delay_us(20);
 	PORTD &= 0xFE; // clear
 }
+
+
 /*
 * Function Name:	ultrasonic_init
 * Input:			NONE
@@ -96,14 +146,7 @@ void sonar() {
 */
 void ultrasonic_init()
 {
-	DDRD = 0x01; // PB0 output - connected to Trig
-	PORTD = 0x00; // clear
-	// turn on interrupts for INT1, connect Echo to INT1
-	EICRA |= (0 << ISC11) | (1 << ISC10); // to enable interrupt on change of state
-	EIMSK |= (1 << INT1);      // Turns on INT1
-	// setup 8 bit timer & enable interrupts, timer increments to 255 and interrupts on overflow
-	TCCR0B = (0<<CS02)|(0<<CS01)|(1<<CS00); // select internal clock
-	TCNT0 = 0; // reset counter to zero
-	TIMSK0 = 1<<TOIE0; // enable timer interrupt
-	sei(); // enable global interrupts
+	sonar_port_init();
+	sonar_timer_init();
+	sonar_interrupt_init();
 }
