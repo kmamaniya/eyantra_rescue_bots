@@ -3,7 +3,7 @@
 * Author List: 		Karan Mamaniya
 * Filename: 		ultrasonic.h
 * Functions:		sonar_timer_init(), sonar_port_init(), sonar() , ultrasonic_init() , 
-* Global Variables:	result,up,running,timerCounter
+* Global Variables:	distance_mm,up,running,timerCounter
 *
 */
 
@@ -15,7 +15,7 @@
 #define INSTR_PER_MS 14745.6          // instructions per millisecond
 #define MAX_RESP_TIME_MS 20      			// maximum response time in milliseconds
 
-volatile uint16_t result = 0;
+volatile uint16_t distance_mm = 0;
 volatile unsigned char up = 0;
 volatile unsigned char running = 0;
 volatile uint32_t timerCounter = 0;
@@ -84,7 +84,7 @@ SIGNAL(TIMER0_OVF_vect)
 		{
 			up = 0;          // stop counting timer value
 			running = 0; 		 // ultrasound scan done
-			result = -1; 		 // show that the measurement failed with a timeout
+			distance_mm = -1; 		 // show that the measurement failed with a timeout
 		}
 	}
 }
@@ -109,7 +109,7 @@ SIGNAL(INT1_vect)
 		}
 		else {					// voltage drop, stop time measurement
 			up = 0;
-			result = (timerCounter * 256 + TCNT0) / 773;
+			distance_mm = (timerCounter * 256 + TCNT0) / 77.3;
 										// Uses time taken to calculate distance
 			running = 0;
 		}

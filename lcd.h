@@ -54,18 +54,6 @@ void lcd_port_config (void)
  PORTC = PORTC & 0x80; // all the LCD pins are set to logic 0 except PORTC 7
 }
 
-/*
-* Function Name:	port_init
-* Input:			NONE
-* Output:			NONE
-* Logic:			Function to Initialize PORTS
-* Example Call:		port_init()
-*
-*/
-void port_init()
-{
-	lcd_port_config();
-}
 
 /*
 * Function Name:	lcd_set_4bit
@@ -122,8 +110,8 @@ void lcd_set_4bit()
 */
 void lcd_init()
 {
+	lcd_port_config ();
 	_delay_ms(1);
-
 	lcd_wr_command(0x28);			//LCD 4-bit mode and 2 lines.
 	lcd_wr_command(0x01);
 	lcd_wr_command(0x06);
