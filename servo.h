@@ -25,10 +25,10 @@
 	*/
 
 void servoPan_pin_config ()	{
-
-	DDRB = DDRB | 0x20;		//making PORTB 5 pin output
-	PORTB = PORTB | 0x20;	//setting PORTB 5 pin to logic 1
+	DDRB  = DDRB | 0x80;  //making PORTB 7 pin output
+	PORTB = PORTB | 0x80; //setting PORTB 7 pin to logic 1
 }
+
 
 
 	/*
@@ -97,11 +97,12 @@ void servo_init ()	{
 	*/
 
 void servoPan (unsigned char degrees)	{
-	float PositionPanServo = 0;
-	PositionPanServo = ((float)degrees / 1.86) + 35.0;
-	OCR1AH = 0x00;
-	OCR1AL = (unsigned char) PositionPanServo;
+	float PositionServo = 0;
+	PositionServo = ((float)degrees / 1.86) + 35.0;
+	OCR1CH = 0x00;
+	OCR1CL = (unsigned char) PositionServo;
 }
+
 
 
 	
@@ -134,9 +135,9 @@ void servoTilt(unsigned char degrees)	{
 	*
 	*/
 
-void servoPan_free ()	{ 
-	OCR1AH = 0x03; 
-	OCR1AL = 0xFF; //Servo 1 off
+void servoPan_free ()	{
+	OCR1CH = 0x03;
+	OCR1CL = 0xFF; //Servo 3 off
 }
 
 	/*
