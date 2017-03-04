@@ -4,12 +4,27 @@
 
 unsigned char serial_data; //to store received data from UDR1
 
+void start_sequence(){
+	while(1){
+		if(serial_data != 'a' || serial_data != 'A'){
+			lcd_string("Program started");
+			serial_data = 0;
+			break;
+		}
+		_delay_us(500);
+	}
+}
+
 void transmit_termination(uint16_t endSequence){
 	UDR0 = endSequence;
 	_delay_us(1000);
 	UDR0 = endSequence;
 	_delay_us(1000);
+	UDR0 = 0;
+	_delay_us(1000);
 	UDR0 = endSequence;
+	_delay_us(1000);
+	UDR0 = 0;
 	_delay_us(1000);
 	UDR0 = endSequence;
 	_delay_us(1000);
@@ -22,9 +37,13 @@ void transmit_array(uint16_t r[],unsigned char theta[], unsigned char phi[],int 
 		_delay_us(1000);
 		UDR0 = r[i]%256;
 		_delay_us(1000);
-		UDR0 = theta[i];
+		UDR0 = theta[i]/256;
 		_delay_us(1000);
-		UDR0 = phi[i];
+		UDR0 = theta[i]%256;
+		_delay_us(1000);
+		UDR0 = phi[i]/256;
+		_delay_us(1000);
+		UDR0 = phi[i]%256;
 		_delay_us(1000);
 	}
 }
@@ -42,7 +61,7 @@ void zigbee_init(void)
 SIGNAL(USART0_RX_vect) 		// ISR for receive complete interrupt
 {
 	serial_data = UDR0; 				//making copy of data from UDR0 in 'data' variable
-	lcd_wr_char(serial_data);
+	//lcd_wr_char(serial_data);
 }
 
 void clear_serial_data(){
