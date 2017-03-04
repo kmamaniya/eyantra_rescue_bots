@@ -58,8 +58,8 @@ void timer1_init ()	{
 	TCCR1B = 0x00; //stop
 	TCNT1H = 0xFC; //Counter high value to which OCR1xH value is to be compared with
 	TCNT1L = 0x01;	//Counter low value to which OCR1xH value is to be compared with
-	OCR1AH = 0x03;	//Output compare Register high value for servo 1
-	OCR1AL = 0xFF;	//Output Compare Register low Value For servo 1
+	OCR1AH = 0x03;	//Output compare Register high value for servo 3
+	OCR1AL = 0xFF;	//Output Compare Register low Value For servo 3
 	OCR1BH = 0x03;	//Output compare Register high value for servo 2
 	OCR1BL = 0xFF;	//Output Compare Register low Value For servo 2
 	OCR1CH = 0x03;	//Output compare Register high value for servo 3
@@ -82,7 +82,7 @@ void timer1_init ()	{
 	*
 	*/
 void servo_init ()	{
-	servoPan_pin_config(); //Configure PORTB 5 pin for servo motor 1 operation
+	servoPan_pin_config(); //Configure PORTB 5 pin for servo motor 3 operation
 	servoTilt_pin_config(); //Configure PORTB 6 pin for servo motor 2 operation
 	timer1_init();
 }
@@ -91,7 +91,7 @@ void servo_init ()	{
 	* Function Name:	servoPan
 	* Input:			NONE
 	* Output:			NONE
-	* Logic:			Function to rotate Servo 1 by a specified angle 
+	* Logic:			Function to rotate Servo 3 by a specified angle 
 	* Example Call:		servoPan(unsigned char)
 	*
 	*/
