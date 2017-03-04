@@ -19,17 +19,7 @@ void start_sequence(){
 	}
 }
 
-void transmit_termination(uint16_t endSequence){
-	UDR0 = endSequence;
-	_delay_us(1000);
-	UDR0 = endSequence;
-	_delay_us(1000);
-	UDR0 = 0;
-	_delay_us(1000);
-	UDR0 = endSequence;
-	_delay_us(1000);
-	UDR0 = 0;
-	_delay_us(1000);
+void transmit_termination(uint8_t endSequence){
 	UDR0 = endSequence;
 	_delay_us(1000);
 }
