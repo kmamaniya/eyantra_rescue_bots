@@ -1,8 +1,17 @@
+/*
+* Project Name: 	e-Yantra Project
+* Author List: 		Karan Mamaniya
+* Filename: 		zigbee.h
+* Functions:		clear_serial_data(), start_sequence(), transmit_termination(uint8_t),transmit_array(uint16_t [],unsigned char [], unsigned char [],int )
+* Global Variables:	serial_data
+*
+*/
 #include<avr/io.h>
 #include<avr/interrupt.h>
 #include<util/delay.h>
 
 unsigned char serial_data; //to store received data from UDR1
+
 
 void clear_serial_data(){
 	serial_data = 0;
@@ -10,7 +19,7 @@ void clear_serial_data(){
 
 void start_sequence(){
 	while(1){
-		if(serial_data != 'a' || serial_data != 'A'){
+		if(serial_data == 'a' || serial_data == 'A'){
 			lcd_string("Program started");
 			clear_serial_data();
 			break;
