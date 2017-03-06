@@ -1,3 +1,13 @@
+/*
+*
+* Project Name: 	e-Yantra Project
+* Author List: 		Sen Rajan Mathew
+* Filename: 		motor.h
+* Functions: 		motion_pin_config, timer5_init, motion_set, forward, back, left, right, soft_left,
+ 								soft_right, stop, soft_right, velocity, left_encoder_pin_config, right_encoder_pin_config,
+								linear_distance_mm, forward_mm, backward_mm, angle_rotate, left_degrees, right_degrees
+*
+*/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -8,7 +18,14 @@ volatile unsigned int Degrees; //to accept angle in degrees for turning
 int left_dir = -1, right_dir = 1;
 int checkBit=0;
 
-
+/*
+* Function Name:	motion_pin_config
+* Input:			NONE
+* Output:			NONE
+* Logic:			Motor pins are initialized
+* Example Call:		motion_pin_config()
+*
+*/
 void motion_pin_config (void)
 {
 	DDRA = DDRA | 0x0F;
@@ -17,6 +34,14 @@ void motion_pin_config (void)
 	PORTL = PORTL | 0x18;
 }
 
+/*
+* Function Name:	timer5_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Motor pins are initialized
+* Example Call:		timer5_init()
+*
+*/
 void timer5_init()
 {
 	TCCR5B = 0x00;
@@ -43,67 +68,161 @@ void motion_set (unsigned char Direction)
 	PORTA = PortARestore;
 }
 
+/*
+* Function Name:	forward
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot forward
+* Example Call:		forward()
+*
+*/
 void forward (void)
 {
 	motion_set(0x06);
 }
 
+/*
+* Function Name:	back
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot backward
+* Example Call:		back()
+*
+*/
 void back (void)
 {
 	motion_set(0x09);
 }
 
+/*
+* Function Name:	left
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the left
+* Example Call:		left()
+*
+*/
 void left (void)
 {
 	motion_set(0x05);
 }
 
+/*
+* Function Name:	right
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the right
+* Example Call:		left()
+*
+*/
 void right (void)
 {
 	motion_set(0x0A);
 }
 
+/*
+* Function Name:	soft_left
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the left using right wheel forward, left wheel is stationary
+* Example Call:		soft_left()
+*
+*/
 void soft_left (void)
 {
 	motion_set(0x04);
 }
+
+/*
+* Function Name:	stop
+* Input:			NONE
+* Output:			NONE
+* Logic:			To stop bot
+* Example Call:		stop()
+*
+*/
 void stop()
 {
 	motion_set(0x00);
 }
 
+/*
+* Function Name:	soft_right
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the right using left wheel forward, right wheel is stationary
+* Example Call:		soft_right()
+*
+*/
 void soft_right (void) //Left wheel forward, Right wheel is stationary
 {
 	motion_set(0x02);
 }
 
+/*
+* Function Name:	velocity
+* Input:			left_motor speed, right_motor speed
+* Output:			NONE
+* Logic:			Set speed for both motors/wheels
+* Example Call:		velocity(char l, char r)
+*
+*/
 void velocity (unsigned char left_motor, unsigned char right_motor)
 {
 	OCR5AL = (unsigned char)left_motor;
 	OCR5BL = (unsigned char)right_motor;
 }
 
+/*
+* Function Name:	left_encoder_pin_config
+* Input:			NONE
+* Output:			NONE
+* Logic:			Set the direction of the PORTE 4 pin as input and enable internal pull-up for PORTE 4 pin
+* Example Call:		left_encoder_pin_config()
+*
+*/
 void left_encoder_pin_config (void)
 {
 	DDRE  = DDRE & 0xEF;  //Set the direction of the PORTE 4 pin as input
 	PORTE = PORTE | 0x10; //Enable internal pull-up for PORTE 4 pin
 }
 
-//Function to configure INT5 (PORTE 5) pin as input for the right position encoder
+/*
+* Function Name:	right_encoder_pin_config
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to configure INT5 (PORTE 5) pin as input for the right position encoder
+* Example Call:		right_encoder_pin_config()
+*
+*/
 void right_encoder_pin_config (void)
 {
 	DDRE  = DDRE & 0xDF;  //Set the direction of the PORTE 4 pin as input
 	PORTE = PORTE | 0x20; //Enable internal pull-up for PORTE 4 pin
 }
 
-//Function to initialize ports
+/*
+* Function Name:	motor_port_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to initialize ports
+* Example Call:		motor_port_init()
+*
+*/
 void motor_port_init()
 {
 	motion_pin_config(); //robot motion pins config
 	left_encoder_pin_config(); //left encoder pin config
 	right_encoder_pin_config(); //right encoder pin config
 }
-
+/*
+* Function Name:	left_position_encoder_interrupt_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Interrupt initialization for left position encoder.
+* Example Call:		left_position_encoder_interrupt_init()
+*
+*/
 void left_position_encoder_interrupt_init (void) //Interrupt 4 enable
 {
 	cli(); //Clears the global interrupt
@@ -112,6 +231,14 @@ void left_position_encoder_interrupt_init (void) //Interrupt 4 enable
 	sei();   // Enables the global interrupt
 }
 
+/*
+* Function Name:	right_position_encoder_interrupt_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Interrupt initialization for right position encoder.
+* Example Call:		right_position_encoder_interrupt_init()
+*
+*/
 void right_position_encoder_interrupt_init (void) //Interrupt 5 enable
 {
 	cli(); //Clears the global interrupt
@@ -119,20 +246,38 @@ void right_position_encoder_interrupt_init (void) //Interrupt 5 enable
 	EIMSK = EIMSK | 0x20; // Enable Interrupt INT5 for right position encoder
 	sei();   // Enables the global interrupt
 }
-
-//ISR for right position encoder
+/*
+* ISR Name:	INT5_vect
+* Input:			NONE
+* Output:			NONE
+* Logic:			ISR for right position encoder
+*
+*/
 ISR(INT5_vect)
 {
 	ShaftCountRight++;  //increment right shaft position count
 }
 
-
-//ISR for left position encoder
+/*
+* ISR Name:	INT5_vect
+* Input:			NONE
+* Output:			NONE
+* Logic:			ISR for left position encoder
+*
+*/
 ISR(INT4_vect)
 {
 	ShaftCountLeft++;  //increment left shaft position count
 }
 
+/*
+* Function Name:	linear_distance_mm
+* Input:			int DistanceInMM
+* Output:			NONE
+* Logic:			Bot moves till the desired distance is obtained
+* Example Call:		linear_distance_mm()
+*
+*/
 void linear_distance_mm(unsigned int DistanceInMM)
 {
 	float ReqdShaftCount = 0;
@@ -140,7 +285,7 @@ void linear_distance_mm(unsigned int DistanceInMM)
 
 	ReqdShaftCount = DistanceInMM / 5.338; // division by resolution to get shaft count
 	ReqdShaftCountInt = (unsigned long int) ReqdShaftCount;
-	
+
 	ShaftCountRight = 0;
 	while(1)
 	{
@@ -152,17 +297,41 @@ void linear_distance_mm(unsigned int DistanceInMM)
 	stop();
 }
 
+/*
+* Function Name:	forward_mm
+* Input:			int DistanceInMM
+* Output:			NONE
+* Logic:			Bot moves forward till the desired distance is obtained
+* Example Call:		forward_mm()
+*
+*/
 void forward_mm(unsigned int DistanceInMM)
 {
 	forward();
 	linear_distance_mm(DistanceInMM);
 }
 
+/*
+* Function Name:	backward_mm
+* Input:			int DistanceInMM
+* Output:			NONE
+* Logic:			Bot moves backward till the desired distance is obtained
+* Example Call:		backward_mm()
+*
+*/
 void backward_mm(unsigned int DistanceInMM) {
 	back();
 	linear_distance_mm(DistanceInMM);
 }
-//Function used for turning robot by specified degrees
+
+/*
+* Function Name:	angle_rotate
+* Input:			int Degrees
+* Output:			NONE
+* Logic:			Function used for turning robot by specified degrees
+* Example Call:		angle_rotate(int d)
+*
+*/
 void angle_rotate(unsigned int Degrees)
 {
 	float ReqdShaftCount = 0;
@@ -177,17 +346,24 @@ void angle_rotate(unsigned int Degrees)
 	{
 		if((ShaftCountRight >= ReqdShaftCountInt) | (ShaftCountLeft >= ReqdShaftCountInt))//| Center_white_line > 100)
 		break;
-		
+
 	}
 
 
 	stop(); //Stop robot
 }
 
+/*
+* Function Name:	left_degrees
+* Input:			int Degrees
+* Output:			NONE
+* Logic:			Function used for turning robot by specified degrees to the left
+* Example Call:		left_degrees(int d)
+*
+*/
 void left_degrees(unsigned int Degrees)
 {
-	
-	
+
 	// 88 pulses for 360 degrees rotation 4.090 degrees per count
 	left(); //Turn left
 	_delay_ms(300);
@@ -196,9 +372,16 @@ void left_degrees(unsigned int Degrees)
 	_delay_ms(50);
 	//buzzer_off();
 
-
 }
 
+/*
+* Function Name:	right_degrees
+* Input:			int Degrees
+* Output:			NONE
+* Logic:			Function used for turning robot by specified degrees to the right
+* Example Call:		right_degrees(int d)
+*
+*/
 void right_degrees(unsigned int Degrees)
 {
 	// 88 pulses for 360 degrees rotation 4.090 degrees per count
@@ -206,7 +389,5 @@ void right_degrees(unsigned int Degrees)
 	_delay_ms(200);
 	right(); //Turn left
 	angle_rotate(Degrees);
-
-
 
 }
