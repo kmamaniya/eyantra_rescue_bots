@@ -68,13 +68,9 @@ void transmit_array(uint16_t r[],unsigned char theta[], unsigned char phi[],int 
 		_delay_us(1000);
 		UDR0 = r[i]%256;
 		_delay_us(1000);
-		UDR0 = theta[i]/256;
+		UDR0 = theta[i];
 		_delay_us(1000);
-		UDR0 = theta[i]%256;
-		_delay_us(1000);
-		UDR0 = phi[i]/256;
-		_delay_us(1000);
-		UDR0 = phi[i]%256;
+		UDR0 = phi[i];
 		_delay_us(1000);
 	}
 }
