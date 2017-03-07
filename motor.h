@@ -57,6 +57,14 @@ void timer5_init()
 	TCCR5B = 0x0B;
 }
 
+/*
+* Function Name:	motion_set
+* Input:			char direction
+* Output:			NONE
+* Logic:			Set motor motion
+* Example Call:		motion_set(char d)
+*
+*/
 void motion_set (unsigned char Direction)
 {
 	unsigned char PortARestore = 0;
