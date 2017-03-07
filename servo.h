@@ -140,20 +140,20 @@ void servoPan_free ()	{
 	OCR1CL = 0xFF; //Servo 3 off
 }
 
-	/*
-	* Function Name:	servoTilt_free
-	* Input:			NONE
-	* Output:			NONE
-	* Logic:			servo_free functions unlocks the servo motors from the any angle and make them free 
-						by giving 100% duty cycle at the PWM. This function can be used to reduce the power 
-						consumption of the motor if it is holding load against the gravity.
-						--->makes servo 2 free rotating
+/*
+* Function Name:	servoTilt_free
+* Input:			NONE
+* Output:			NONE
+* Logic:			servo_free functions unlocks the servo motors from the any angle and make them free 
+					by giving 100% duty cycle at the PWM. This function can be used to reduce the power 
+					consumption of the motor if it is holding load against the gravity.
+					--->makes servo 2 free rotating
 
-	* Example Call:		servoTilt_free()
-	*
-	*/
+* Example Call:		servoTilt_free()
+*
+*/
 
-void servoTilt_free()	{ //makes servo 2 free rotating
+void servoTilt_free()	{ 
 	OCR1BH = 0x03;
-	OCR1BL = 0xFF; //Servo 2 off
+	OCR1BL = 0xFF; 	//Servo 2 off
 }

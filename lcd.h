@@ -37,15 +37,15 @@ unsigned int hundred;
 unsigned int thousand;
 unsigned int million;
 
-	/*
-	* Function Name:	lcd_port_config
-	* Input:			NONE
-	* Output:			NONE
-	* Logic:			Function to configure LCD port and setting all LCD pins except
-                PORTC to logic 0
-	* Example Call:		servoPan_pin_config()
-	*
-	*/
+/*
+* Function Name:	lcd_port_config
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to configure LCD port and setting all LCD pins except
+                    PORTC to logic 0
+* Example Call:		servoPan_pin_config()
+*
+*/
 
 void lcd_port_config (void)
 {
@@ -284,9 +284,15 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 	{
 		lcd_wr_char('E');
 	}
-
 }
 
+/*
+* Function Name:	lcd_clear
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to clear screen
+* Example Call:		lcd_cursor(char r,char c, unsigned int v, int d)
+*/
 void lcd_clear(){
 	lcd_wr_command(0x01);
 }
