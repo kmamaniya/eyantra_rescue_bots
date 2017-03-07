@@ -54,8 +54,8 @@ int get_angle(){
 int get_movement(){
 	int moves=0;
 	while(serial_data != ';'){
-		angle[moves] = get_angle();
 		linear[moves] = get_distance();
+		angle[moves] = get_angle();
 		moves++;
 	}
 	clear_serial_data();
