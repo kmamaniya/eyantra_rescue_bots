@@ -38,7 +38,7 @@ void motion_pin_config (void)
 * Function Name:	timer5_init
 * Input:			NONE
 * Output:			NONE
-* Logic:			Motor pins are initialized
+* Logic:			Timer 5 is set for PWM generation
 * Example Call:		timer5_init()
 *
 */
@@ -390,4 +390,20 @@ void right_degrees(unsigned int Degrees)
 	right(); //Turn left
 	angle_rotate(Degrees);
 
+}
+
+/*
+* Function Name:	motor_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Initialize motor, timer5 and position encoders
+* Example Call:		motor_init()
+*
+*/
+
+void motor_init(){
+	motor_port_init();
+	timer5_init();
+	left_position_encoder_interrupt_init();
+	right_position_encoder_interrupt_init();
 }

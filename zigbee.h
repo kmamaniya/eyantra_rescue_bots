@@ -11,6 +11,7 @@
 #include<util/delay.h>
 
 unsigned char serial_data; //to store received data from UDR1
+unsigned char serial_flag; //flag received data from UDR1
 
 /*
 * Function Name:	clear_serial_data
@@ -21,6 +22,7 @@ unsigned char serial_data; //to store received data from UDR1
 */
 void clear_serial_data(){
 	serial_data = 0;
+	serial_flag = 0;
 }
 
 /*
@@ -103,5 +105,10 @@ void zigbee_init()
 SIGNAL(USART0_RX_vect) 		// ISR for receive complete interrupt
 {
 	serial_data = UDR0; 				//making copy of data from UDR0 in 'data' variable
-	//lcd_wr_char(serial_data);
+	serial_flag=1;
+}
+
+void transmit_char(char data){
+	UDR0 = data;
+	_delay_us(1000);
 }

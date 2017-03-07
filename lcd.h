@@ -29,7 +29,6 @@ void lcd_wr_command(unsigned char);
 void lcd_wr_char(char);
 void lcd_line1();
 void lcd_line2();
-void lcd_string(char*);
 
 unsigned int temp;
 unsigned int unit;
@@ -286,4 +285,8 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 		lcd_wr_char('E');
 	}
 
+}
+
+void lcd_clear(){
+	lcd_wr_command(0x01);
 }
