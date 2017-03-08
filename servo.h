@@ -89,10 +89,10 @@ void servo_init ()	{
 	
 	/*
 	* Function Name:	servoPan
-	* Input:			NONE
+	* Input:			unsigned char degrees
 	* Output:			NONE
 	* Logic:			Function to rotate Servo 3 by a specified angle 
-	* Example Call:		servoPan(unsigned char)
+	* Example Call:		servoPan(char d)
 	*
 	*/
 
@@ -108,7 +108,7 @@ void servoPan (unsigned char degrees)	{
 	
 	/*
 	* Function Name:	servoTilt
-	* Input:			NONE
+	* Input:			unsigned char degrees
 	* Output:			NONE
 	* Logic:			Function to rotate Servo 2 by a specified angle
 	* Example Call:		servoTilt(unsigned char)

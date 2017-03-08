@@ -6,7 +6,6 @@
 * Functions: 		init_ports () , lcd_reset () , lcd_init () , lcd_wr_command (unsigned char) ,
 *					lcd_wr_char () , lcd_line1 () , lcd_line2 () , lcd_string(char*)
 * Global Variables:	NONE
-*
 */
 
 #include <avr/io.h>
@@ -121,10 +120,10 @@ void lcd_init()
 
 /*
 * Function Name:	lcd_wr_command
-* Input:			NONE
+* Input:			char cmd
 * Output:			NONE
 * Logic:			Function to Write Command on LCD
-* Example Call:		lcd_wr_command()
+* Example Call:		lcd_wr_command(char c)
 */
 void lcd_wr_command(unsigned char cmd)
 {
@@ -152,7 +151,7 @@ void lcd_wr_command(unsigned char cmd)
 
 /*
 * Function Name:	lcd_wr_char
-* Input:			char
+* Input:			char letter
 * Output:			NONE
 * Logic:			Function to Write Data on LCD
 * Example Call:		lcd_wr_char(char l)
@@ -195,7 +194,7 @@ void lcd_home()
 
 /*
 * Function Name:	lcd_string
-* Input:			char *
+* Input:			char *str
 * Output:			NONE
 * Logic:			Function to Print String on LCD
 * Example Call:		lcd_string(char *s)
@@ -213,7 +212,7 @@ void lcd_string(char *str)
 
 /*
 * Function Name:	lcd_cursor
-* Input:			char, char
+* Input:			char row, char column
 * Output:			NONE
 * Logic:			Position the LCD cursor at "row", "column".
 * Example Call:		lcd_cursor(char r,char c)
@@ -232,7 +231,7 @@ void lcd_cursor (char row, char column)
 
 /*
 * Function Name:	lcd_cursor
-* Input:			char, char, unsigned int, int
+* Input:			char row, char coloumn, unsigned int value, int digits
 * Output:			NONE
 * Logic:			Function To Print Any input value upto the desired digit on LCD
 * Example Call:		lcd_cursor(char r,char c, unsigned int v, int d)
@@ -294,5 +293,5 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 * Example Call:		lcd_cursor(char r,char c, unsigned int v, int d)
 */
 void lcd_clear(){
-	lcd_wr_command(0x01);
+	lcd_wr_command(0x01);		// Code to clear lcd screen
 }

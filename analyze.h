@@ -1,3 +1,12 @@
+/*
+* Project Name: 	e-Yantra Project
+* Author List: 		Karan Mamaniya
+* Filename: 		analyze.h
+* Functions:		getNumber(char data), get_distance(), get_angle(), get_movement(), move(),
+					scanAndTransmit()
+* Global Variables:	linear[], angle[]
+*
+*/
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -5,52 +14,79 @@
 int linear[10];
 int angle[10];
 
+/*
+* Function Name:	getNumber
+* Input:			char
+* Output:			int
+* Logic:			Get individual 8 bit data from control center
+* Example call:		getNumber(char d)
+*/
 int getNumber(char data){
-	return data-'0';
+	return data-'0';		//Obtain Decimal from ASCII input
 }
 
+/*
+* Function Name:	get_distance
+* Input:			NONE
+* Output:			int
+* Logic:			Get the distance to be travelled from the control center
+* Example call:		get_distance()
+*/
 int get_distance(){
-	lcd_clear();
-	lcd_cursor(1,1);
-	lcd_string("Enter distance");
-	int distance = 0;
-	clear_serial_data();
-	while (serial_data != ',')
+	lcd_clear();					//Clears lcd
+	lcd_cursor(1,1);				//Sets lcd cursor at 1,1 before writing on lcd
+	lcd_string("Enter distance");	//Displaying "Enter distance" on lcd screen
+	int move_distance = 0;			//Initializing distances variable to zero
+	clear_serial_data();			//Clears serial data
+	while (serial_data != ',')		//Receive data until ','
 	{
-		if (serial_flag==1)
+		if (serial_flag==1)			//append only when i/p is received
 		{
-			distance *= 10;
-			distance += getNumber(serial_data);
-			clear_serial_data();
+			move_distance *= 10;						//logic to obtain decimal
+			move_distance += getNumber(serial_data);	
+			clear_serial_data();						
 		}
-		lcd_cursor(2,1);
-		lcd_string("D = ");
-		lcd_print(2,5,distance,4);
+		lcd_cursor(2,1);								//display move_distance
+		lcd_string("D = ");								
+		lcd_print(2,5,move_distance,4);					
 	}
 	clear_serial_data();
-	return distance;
+	return move_distance;
 }
 
+/*
+* Function Name:	get_angle
+* Input:			NONE
+* Output:			int
+* Logic:			Get the angle to be travelled from the control center
+* Example call:		get_angle()
+*/
 int get_angle(){
-	lcd_clear();
-	int angle=0;
-	lcd_cursor(1,1);
+	lcd_clear();										//Clears lcd
+	int angle=0;										//Displaying "Enter angle" on lcd screen
+	lcd_cursor(1,1);									//Sets lcd cursor at 1,1 before writing on lcd
 	lcd_string("Enter angle");
-	clear_serial_data();
+	clear_serial_data();								//Clears serial data
 	while (serial_data != ',' && serial_data != ';'){
-		if (serial_flag==1)
+		if (serial_flag==1)								//append only when i/p is received
 		{
-			angle = getNumber(serial_data)*90;
+			angle = getNumber(serial_data)*90;			//Store actual clockwise angle
 			clear_serial_data();
 		}
-		lcd_cursor(2,1);
+		lcd_cursor(2,1);								//display angle
 		lcd_string("A = ");
 		lcd_print(2,5,angle,3);
 	}
 	return angle;
 }
 
-
+/*
+* Function Name:	get_movement
+* Input:			NONE
+* Output:			int
+* Logic:			Get movement to be travelled by using the distance and angle
+* Example call:		get_movement()
+*/
 int get_movement(){
 	int moves=0;
 	while(serial_data != ';'){
@@ -62,6 +98,13 @@ int get_movement(){
 	return moves;
 }
 
+/*
+* Function Name:	move
+* Input:			NONE
+* Output:			NONE
+* Logic:			Manoeuvre the bot from 3d analysis
+* Example call:		move()
+*/
 void move(){
 	int moves,count=0;
 	moves=get_movement();
@@ -75,6 +118,13 @@ void move(){
 	}
 }
 
+/*
+* Function Name:	scanAndTransmit
+* Input:			NONE
+* Output:			NONE
+* Logic:			Scans and Transmits data
+* Example call:		scanAndTransmit()
+*/
 void scanAndTransmit(){
 	float pan_step,tilt_step;
 	int count=0;

@@ -104,6 +104,13 @@ SIGNAL(USART0_RX_vect) 		// ISR for receive complete interrupt
 	serial_flag=1;
 }
 
+/*
+* Function Name:	transmit_char
+* Input:			char data
+* Output:			NONE
+* Logic:			Transmits a character
+* Example call:		zigbee_init(char d)
+*/
 void transmit_char(char data){
 	UDR0 = data;
 	_delay_us(1000);
