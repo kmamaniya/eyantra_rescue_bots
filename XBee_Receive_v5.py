@@ -1,5 +1,14 @@
-# This code works on variable angles and uses file for storage
+ '''
+     Project Name:     e-Yantra Project
+     Author List:      Shaun Kollannur, Joshua Koyeerath
+     Filename:         XBee_Receive_v5.py
+     Functions:        initialize_var(), open_serialComm(), output_image(x,y,z,htmlfile),
+                       createPlan(plot_fname,z_plan), deleteContent(pfile), fillXYZ(filename),
+                       moveBot(), scanArena(fcounter_check), shiftOfOrigin(theta_temp,x_temp,y_temp,input_file)
+     Global Variables: x_dist, y_dist, new_theta, fcounter_check
 
+ '''
+# This code works on variable angles and uses file for storage
 import plotly.plotly as py
 import plotly.offline as of
 import plotly.graph_objs as go
@@ -13,6 +22,15 @@ y_dist=0;
 new_theta=0;
 fcounter_check = 0;
 
+'''
+    Function Name:    initialize_var
+    Input:            NONE
+    Output:           r, x, y, z, theta, phi
+    Logic:            Initialize the lists (Radius, X, Y, Z, theta, phi)
+                      The list are initialized with size zero in order to append the results
+                      after each scan
+    Example call:     initialize_var()
+'''
 def initialize_var():
     # Initialize the array holding the incoming points
     r = range(0)
@@ -25,7 +43,13 @@ def initialize_var():
 
     return r,x,y,z,theta,phi
 
-
+'''
+    Function Name:    open_serialComm
+    Input:            NONE
+    Output:           serial_port
+    Logic:            Enable USB port for XBee communication
+    Example call:     open_serialComm()
+'''
 def open_serialComm():
     # Enable USB communication
     serial_port = serial.Serial('COM12',9600)    # For XBee_B
@@ -39,6 +63,13 @@ def open_serialComm():
     return serial_port
 
 
+'''
+    Function Name:    output_image
+    Input:            x, y, z, htmlfile
+    Output:           Graphical Output 
+    Logic:            Output plots using the plot.ly python library
+    Example call:     output_image(x,y,z,htmlfile)
+'''
 def output_image(x,y,z,htmlfile):
     trace=go.Scatter3d(
                             # set color to an array/list of desired values
@@ -56,6 +87,13 @@ def output_image(x,y,z,htmlfile):
     data=[trace]
     of.plot(data, filename=htmlfile)
 
+'''
+    Function Name:    createPlan
+    Input:            plot_fname, z_plan (Both filenames are passed)
+    Output:           zplot_file (Write on this file)
+    Logic:            zplot_file 
+    Example call:     createPlan(plot_fname,z_plan)
+'''
 def createPlan(plot_fname,z_plan):
     plot_file = open(plot_fname,'r')
     zplot_file = open(z_plan,'w')
@@ -70,33 +108,59 @@ def createPlan(plot_fname,z_plan):
         #print r2temp
         ztemp = float(r2temp[2])
 
+        #Plot points satisfying 0 < z < 100
         if(ztemp < 100 and ztemp > 0):
             zplot_file.writelines(str(r2temp[0])+','+str(r2temp[1])+',0')
             zplot_file.writelines('\n')
             print 'Input in z file\n'
 
     print 'Filtering Complete !!'
+
+    #Closing the files after read and write operations are over
     plot_file.close()
     zplot_file.close()
 
+'''
+    Function Name:    deleteContent
+    Input:            pfile (Filename)
+    Output:           pfile (The file data is erased)
+    Logic:            The file data is completely cleared
+    Example call:     deleteContent(pfile)
+'''
 def deleteContent(pfile):
     pfile.seek(0)
     pfile.truncate()
 
+'''
+    Function Name:    fillXYZ
+    Input:            filename
+    Output:           x, y, z arrays
+    Logic:            The file data is read and the x, y and z values are returned
+    Example call:     fillXYZ(filename)
+'''
 def fillXYZ(filename):
+    # Initializing x, y and z as empty list
     x = range(0)
     y = range(0)
     z = range(0)
+    # Open file
     file = open(filename,'r')
-
+    #Read line by line and get required information
     for line in file:
-        line = line.split('\n')
-        rtemp = line[0].split(',')
+        line = line.split('\n')     # Splitting line by using \n
+        rtemp = line[0].split(',')  # Splitting x, y and z values using ,
         x.extend([rtemp[0]])
         y.extend([rtemp[1]])
         z.extend([rtemp[2]])
     return x,y,z
 
+'''
+    Function Name:    moveBot
+    Input:            NONE
+    Output:           Store path moved in PathRecord.txt
+    Logic:            Send information about path to bot, also store path moved in PathRecord.txt
+    Example call:     moveBot()
+'''
 def moveBot():
     # Start sending instructions..
     path_file = open('PathRecord.txt','w+')
@@ -122,6 +186,14 @@ def moveBot():
             
     path_file.close()
 
+'''
+    Function Name:    scanArena
+    Input:            fcounter_check
+    Output:           fcounter_check
+    Logic:            Receives scaned information from bot and then stores the information
+                      in a particular format in the file(3DPlot)
+    Example call:     scanArena(fcounter_check)
+'''
 def scanArena(fcounter_check):
     plot_file = open('3DPlot.txt','a+')
     r,x,y,z,theta,phi = initialize_var()
@@ -185,6 +257,13 @@ def scanArena(fcounter_check):
 
     return fcounter_check 
 
+'''
+    Function Name:    shiftOfOrigin
+    Input:            theta_temp, x_temp, y_temp, input_file
+    Output:           theta_temp,x_temp,y_temp
+    Logic:            Performs shift of origin after the robot moves from initial position
+    Example call:     shiftOfOrigin(theta_temp,x_temp,y_temp,input_file)
+'''
 def shiftOfOrigin(theta_temp,x_temp,y_temp,input_file):
     path_file = open(input_file,'r');
     t_dist=range(0);
@@ -216,7 +295,7 @@ while(input2 != 'y'):
     input2 = raw_input('Do you want to initiate ?')
 
 print '\nInitiate the communication...'
-
+# Menu to control robot
 while(1):
     print '\n------- Options -------\n1 : Scan\n2 : Move'
     if(raw_input('\nEnter option : ') == '1'):
