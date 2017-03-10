@@ -153,12 +153,12 @@ void lcd_wr_command(unsigned char cmd)
 * Function Name:	lcd_wr_char
 * Input:			char letter
 * Output:			NONE
-* Logic:			Function to Write Data on LCD
+* Logic:			Function to Write char Data on LCD
 * Example Call:		lcd_wr_char(char l)
 */
 void lcd_wr_char(char letter)
 {
-	char temp;
+	char temp;						
 	temp = letter;
 	temp = (temp & 0xF0);
 	lcd_port &= 0x0F;
@@ -189,7 +189,7 @@ void lcd_wr_char(char letter)
 */
 void lcd_home()
 {
-	lcd_wr_command(0x80);
+	lcd_wr_command(0x80);		//LCD 
 }
 
 /*
@@ -221,7 +221,7 @@ void lcd_string(char *str)
 void lcd_cursor (char row, char column)
 {
 	switch (row) {
-		case 1: lcd_wr_command (0x80 + column - 1); break;
+		case 1: lcd_wr_command (0x80 + column - 1); break;		
 		case 2: lcd_wr_command (0xc0 + column - 1); break;
 		case 3: lcd_wr_command (0x94 + column - 1); break;
 		case 4: lcd_wr_command (0xd4 + column - 1); break;
@@ -239,6 +239,7 @@ void lcd_cursor (char row, char column)
 void lcd_print (char row, char coloumn, unsigned int value, int digits)
 {
 	unsigned char flag=0;
+	//Logic to print on the lcd after taking inputs from the user
 	if(row==0||coloumn==0)
 	{
 		lcd_home();
