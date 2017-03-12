@@ -16,26 +16,20 @@ void init(){
 	lcd_set_4bit();
 	zigbee_init();
 	ultrasonic_init();
+	servo_init();
 	sei();
+	motor_velocity(248,240);
 }
 
 int main(void)
 {
 	int i;
 	init();
-	lcd_string("Initialing..");
-	for (i=0;i<3;i++)
-	{
-		lcd_print(1,13,3-i,1);
-		_delay_ms(1000);
+	for(i=0;i<4;i++){
+		transmit_char(201);
 	}
 	lcd_clear();
 	lcd_home();
-	lcd_string("\' to start...");
-	clear_serial_data();
-	while(serial_data != '\''){
-		_delay_us(1000);
-	}
 	while(1){
 		clear_serial_data();
 		lcd_clear();
@@ -48,9 +42,10 @@ int main(void)
 		}
 		switch(serial_data){
 			case '1':	scanAndTransmit();
-						break;
+			break;
 			case '2':	move();
 			break;
+			case '3':	return_home();
 			default:	break;
 		}
 	}
