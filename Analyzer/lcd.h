@@ -5,7 +5,7 @@
 * Filename: 		lcd.h
 * Functions: 		init_ports () , lcd_reset () , lcd_init () , lcd_wr_command (unsigned char) ,
 *					lcd_wr_char () , lcd_line1 () , lcd_line2 () , lcd_string(char*)
-* Global Variables:	NONE
+* Global Variables:	temp, unit, tens, hundred, thousand, million
 *
 */
 

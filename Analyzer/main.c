@@ -16,11 +16,13 @@
 #include "ultrasonic.h"
 #include "analyze.h"
 #include "motor.h"
+
+
 /*
 * Function Name:	init
 * Input:			NONE
 * Output:			NONE
-* Logic:			Function to initialize motor, lcd, zigbee and ultrasonic sensor
+* Logic:			Function to initialize servo, motor, lcd, zigbee and ultrasonic sensor
 * Example Call:		init()
 *
 */
@@ -33,7 +35,7 @@ void init(){
 	ultrasonic_init();
 	servo_init();
 	sei();
-	motor_velocity(248,240);
+	motor_velocity(248,240);		//set motor velocity to match right and left rotation
 }
 
 /*
@@ -48,32 +50,28 @@ int main(void)
 {
 	int i;
 	init();
-	for(i=0;i<4;i++){
+	for(i=0;i<4;i++){			//transmit end sequence to stop scan loop in control
 		transmit_char(201);
 	}
-	lcd_clear();
-	lcd_home();
 	while(1){
 		clear_serial_data();
-		lcd_clear();
+		lcd_clear();				//clear LCD
 		lcd_home();
-		//Printing a menu of options
-		lcd_string("1. Scan");		//Option 1 to scan room
+		lcd_string("1. Scan");		//Printing a menu of options
 		lcd_cursor(2,1);
-		lcd_string("2. Move");		//Option 2 to move bot
+		lcd_string("2. Move");	
 		while(serial_flag == 0){
-			_delay_us(1000);
+			_delay_us(500);
 		}
 		switch(serial_data){
-			case '1':	scanAndTransmit();		/* Calls function to scan and transmit data to 
-												   the remote machine */
-			break;
+			case '1':	scanAndTransmit();		/* Calls function to scan and transmit data to the remote machine */										   
+						break;
 			case '2':	move();					//Calls the move function
-			break;
-			case '3':	return_home();			/* This function or command tells the bot to return
-												   to its initial position (home location) */
+						break;
+			case '3':	return_home();			/* This function or command tells the bot to return to its initial position (home location) */					   
 			default:	break;
 		}
 	}
+	return 0;
 }
 

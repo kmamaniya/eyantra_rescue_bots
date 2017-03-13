@@ -12,16 +12,16 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-int linear_movements[10];
-int angle_movements[10];
-int moves;
+int linear_movements[10];             //to store linear movements
+int angle_movements[10];              //to store angular movements
+int moves;                            //to store number of moves
 
 /*
 * Function Name:	getNumber
 * Input:			char
 * Output:			int
-* Logic:			Get individual 8 bit data from control center
-* Example call:		getNumber('1')
+* Logic:			decode decimal from ASCII data
+* Example call:		decimalDigit = getNumber('1')
 */
 int getNumber(char data){
 	return data-'0';		//Obtain Decimal from ASCII input
@@ -32,7 +32,7 @@ int getNumber(char data){
 * Input:			NONE
 * Output:			returns distance in mm
 * Logic:			Get the distance to be travelled from the control center
-* Example call:		get_distance()
+* Example call:		linear_movement[i] = get_distance()
 */
 int get_distance(){
 	lcd_clear();					//Clears lcd
@@ -48,7 +48,7 @@ int get_distance(){
 			distance += getNumber(serial_data);
 			clear_serial_data();
 		}
-		lcd_cursor(2,1);								//display move_distance
+		lcd_cursor(2,1);								//display move_distance received
 		lcd_string("D = ");
 		lcd_print(2,5,distance,4);
 	}
@@ -61,7 +61,7 @@ int get_distance(){
 * Input:			NONE
 * Output:			returns angle in degrees
 * Logic:			Get the angle to be travelled from the control center
-* Example call:		get_angle()
+* Example call:		angle_movement[i] = get_angle()
 */
 int get_angle(){
 	lcd_clear();										//Clears lcd
@@ -85,7 +85,7 @@ int get_angle(){
 /*
 * Function Name:	get_movement
 * Input:			NONE
-* Output:			int
+* Output:			returns total number of moves and populates angle_movement[] & linear_movement[]
 * Logic:			Get movement to be travelled by using the distance and angle
 * Example call:		get_movement()
 */
@@ -103,22 +103,22 @@ int get_movement(){
 /*
 * Function Name:	move
 * Input:			NONE
-* Output:			NONE
+* Output:			robot navigation
 * Logic:			Manoeuvre the bot from 3d analysis
 					by deciding the distance and angle to be travelled
 * Example call:		move()
 */
 void move(){
 	int count=0;
-	moves=get_movement();
-	while(count<moves){
-		switch (angle_movements[count]){
+	moves=get_movement();       
+	while(count<moves){             
+		switch (angle_movements[count]){               //first execute turn instruction
 			case 90: soft_right();angle_rotate(90);break;
 			case 180: soft_left();angle_rotate(180);break;
 			case 270: soft_left();angle_rotate(90);break;
 			default:break;
 		}
-		forward();
+		forward();                                       //execute linear movement
 		linear_distance_mm(linear_movements[count]);
 		stop();
 		_delay_ms(500);
@@ -128,48 +128,46 @@ void move(){
 /*
 * Function Name:	scanAndTransmit
 * Input:			NONE
-* Output:			NONE
+* Output:			serial data output
 * Logic:			Scans and Transmits data
 * Example call:		scanAndTransmit()
 */
 void scanAndTransmit(){
-	float pan_step,tilt_step;
+	float pan_step,tilt_step;           //step angles
 	int count=0;
-	uint16_t r[200];
-	unsigned char theta[200],phi[200];
-	servoPan(0);
+	uint16_t r[200];                    //radius in spherical co-ordinates system
+	unsigned char theta[200],phi[200];  // theta and phi in spherical co-ordinate system
+	servoPan(0);                        //intiatial servo positions        
 	_delay_ms(1000);
-	servoTilt(44.46);
+	servoTilt(44.46);                   //intiatial servo positions        
 	_delay_ms(1000);
 	lcd_clear();
 	lcd_cursor(1,1);
-	for(tilt_step=44.64;tilt_step<70;tilt_step+=1.86){
-		servoTilt(tilt_step);
-		_delay_ms(500);
+	for(tilt_step=44.64;tilt_step<70;tilt_step+=1.86){           //scan from tilt angle 44.64 degrees 
+		servoTilt(tilt_step);                                    //to 70 degrees
+		_delay_ms(500);                                          //and pan angle 0 degrees to 180 degrees
 		pan_step=0;
 		lcd_print(2,1,tilt_step,3);
 		for (count=0;pan_step<180;count++){
 			servoPan(pan_step);
-			ultrasonic_distance();
-			lcd_print(2,5,up,1);
-			lcd_print(2,7,running,1);
-			_delay_ms(150);
-			r[count]= distance_mm;
+			ultrasonic_distance();                               //start ultrasonic sensor
+			_delay_ms(150);                                      
+			r[count]= distance_mm;                               //store r, phi and theta values
 			theta[count] = (uint8_t)(pan_step);
 			phi[count] = (uint8_t) (tilt_step);
 			lcd_print(1,1,distance_mm,4);
 			lcd_print(1,7,pan_step,3);
 			pan_step+=1.86;
-			distance_mm = 0;
+			distance_mm = 0;                                     //reset distance_mm
 		}
 		servoPan(0);
-		transmit_array(r,theta,phi,count);
+		transmit_array(r,theta,phi,count);                       //serially transmit all the obtained data in single sweep
 		_delay_ms(500);
 		lcd_clear();
 	}
-	for (count = 0; count < 4; count++)
-	{
-		transmit_char(201);
+	for (count = 0; count < 4; count++)                          //End sequence r = 201,201
+	{                                                            //phi = 201
+		transmit_char(201);                                      //theta = 201 to imply end of transmission
 	}
 	servoPan_free();
 	servoTilt_free();
@@ -184,19 +182,19 @@ void scanAndTransmit(){
 * Example call:		return_home()
 */
 void return_home(){
-	while(1){
-		moves=get_movement();
-		int count = moves-1;
-		back();
-		linear_distance_mm(linear_movements[count]);
+	while(1){                                                    //bot remains in while once this command is executed
+		moves=get_movement();                                    //get number or move instructions
+		int count = moves-1;                                     
+		back();                                                  // reverse linear motion
+		linear_distance_mm(linear_movements[count]);             // reverse angular motion
 		stop();
-		switch (angle_movements[count]){
+		switch (angle_movements[count]){                         // reverse angular motion
 			case 270: soft_right2();angle_rotate(90);break;
 			case 180: soft_right2();angle_rotate(180);break;
 			case 90: soft_left2();angle_rotate(90);break;
 			default:break;
 		}
-		transmit_char('$');
+		transmit_char('$');                                      //send acknowledgemnt character '$'
 		_delay_ms(500);
 	}
 }

@@ -1,3 +1,13 @@
+/*
+* Project Name: 	e-Yantra Project
+* Author List: 		Karan Mamaniya
+* Filename: 		zigbee.h
+* Functions:		clear_serial_data(), transmit_char(), transmit_array(), zigbee_init(), ISR for serial reception
+* Global Variables:	serial_data, serial_flag
+*
+*/
+
+
 #include<avr/io.h>
 #include<avr/interrupt.h>
 #include<util/delay.h>
@@ -24,8 +34,8 @@ void clear_serial_data(){
 * Logic:			Transmits a character
 * Example call:		zigbee_init(char d)
 */
-void transmit_char(uint8_t endSequence){
-	UDR0 = endSequence;
+void transmit_char(uint8_t ch){
+	UDR0 = ch;                 //transmit character ch
 	_delay_us(1000);
 }
 
@@ -39,13 +49,13 @@ void transmit_char(uint8_t endSequence){
 void transmit_array(uint16_t r[],unsigned char theta[], unsigned char phi[],int count){
 	int i;
 	for(i=0;i<count;i++){
-		UDR0 = r[i]/256;
+		UDR0 = r[i]/256;                  //transmit MSB of 16-bit r[i]
 		_delay_us(1000);
-		UDR0 = r[i]%256;
+		UDR0 = r[i]%256;                  //transmit LSB of 16-bit r[i]
 		_delay_us(1000);
-		UDR0 = theta[i];
+		UDR0 = theta[i];                  //transmit theta[i]
 		_delay_us(1000);
-		UDR0 = phi[i];
+		UDR0 = phi[i];                    //transmit phi[i]
 		_delay_us(1000);
 	}
 }
@@ -77,8 +87,5 @@ void zigbee_init()
 SIGNAL(USART0_RX_vect) 		// ISR for receive complete interrupt
 {
 	serial_data = UDR0; 				//making copy of data from UDR0 in 'data' variable
-	serial_flag=1;
-	if(serial_data == '/'){
-		clear_serial_data();
-	}
+	serial_flag=1;                      // make flag true
 }

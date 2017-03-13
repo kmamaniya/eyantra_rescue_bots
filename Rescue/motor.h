@@ -1,14 +1,12 @@
 /*
 *
 * Project Name: 	e-Yantra Project
-* Author List: 		Sen Rajan Mathew, Karan Mamanyia
+* Author List: 		Sen Rajan Mathew
 * Filename: 		motor.h
-* Functions: 		motion_pin_config, timer5_init, motion_set, forward, back, left, right,
-					soft_left, soft_right, soft_left2, soft_right2, stop, motor_velocity,
-					left_encoder_pin_config, right_encoder_pin_config, motor_port_init,
-					left_position_encoder_interrupt_init, right_position_encoder_interrupt_init,
-					linear_distance_mm, angle_rotate, motor_init
-* Global Variables: ShaftCountLeft, ShaftCountRight, Degrees, left_dir, right_dir, checkBit
+* Functions: 		motion_pin_config(), timer5_init(), motion_set(), forward(), back(), soft_left(),
+ 								soft_right2(), stop(), soft_right(),soft_left2(), motor_velocity(), left_encoder_pin_config(), right_encoder_pin_config(),
+								linear_distance_mm(), angle_rotate(), ISR for INT4, ISR for INT5
+* Global variables:    ShaftCountLeft, ShaftCountRight, Degrees, left_dir, right_dir, checkBit
 *
 */
 #include <avr/io.h>
@@ -20,7 +18,6 @@ volatile unsigned long int ShaftCountRight = 0; //to keep track of right positio
 volatile unsigned int Degrees; //to accept angle in degrees for turning
 int left_dir = -1, right_dir = 1;
 int checkBit=0;
-
 /*
 * Function Name:	motion_pin_config
 * Input:			NONE
@@ -29,7 +26,7 @@ int checkBit=0;
 * Example Call:		motion_pin_config()
 *
 */
-void motion_pin_config (void){
+void motion_pin_config (){
 	DDRA = DDRA | 0x0F;
 	PORTA = PORTA & 0xF0;
 	DDRL = DDRL | 0x18;
@@ -84,7 +81,7 @@ void motion_set (unsigned char Direction){
 *
 */
 void forward (){
-	motion_set(0x06);
+	motion_set(0x06);        //both wheel forward
 }
 
 /*
@@ -95,35 +92,8 @@ void forward (){
 * Example Call:		back()
 *
 */
-void back (void)
-{
-	motion_set(0x09);
-}
-
-/*
-* Function Name:	left
-* Input:			NONE
-* Output:			NONE
-* Logic:			To move bot to the left
-* Example Call:		left()
-*
-*/
-void left (void)
-{
-	motion_set(0x05);
-}
-
-/*
-* Function Name:	right
-* Input:			NONE
-* Output:			NONE
-* Logic:			To move bot to the right
-* Example Call:		left()
-*
-*/
-void right (void)
-{
-	motion_set(0x0A);
+void back (){
+	motion_set(0x09);     //both wheel backwards
 }
 
 /*
@@ -135,7 +105,33 @@ void right (void)
 *
 */
 void soft_left (void){
-	motion_set(0x04);
+	motion_set(0x04);          //right wheel forward, left wheel stationary
+}
+
+
+/*
+* Function Name:	soft_left2()
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the left using left wheel backward, right wheel is stationary
+* Example Call:		soft_left2()
+*
+*/
+void soft_left2(){   
+	motion_set(0x01); //Left wheel backward, Right wheel stationary
+}
+
+
+/*
+* Function Name:	soft_right2
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the right when right wheel backward, left wheel is stationary
+* Example Call:		soft_right2()
+*
+*/
+void soft_right2(){
+	motion_set(0x08);         //right wheel backward, left wheel stationary
 }
 
 /*
@@ -147,7 +143,7 @@ void soft_left (void){
 *
 */
 void stop(){
-	motion_set(0x00);
+	motion_set(0x00);      //stop both wheels
 }
 
 /*
@@ -158,16 +154,8 @@ void stop(){
 * Example Call:		soft_right()
 *
 */
-void soft_right (void){ //Left wheel forward, Right wheel is stationary
+void soft_right (){ //Left wheel forward, Right wheel is stationary
 	motion_set(0x02);
-}
-
-void soft_left2(){
-	motion_set(0x01);
-}
-
-void soft_right2(){
-	motion_set(0x08);
 }
 
 /*
@@ -191,7 +179,8 @@ void motor_velocity (unsigned char left_motor, unsigned char right_motor){
 * Example Call:		left_encoder_pin_config()
 *
 */
-void left_encoder_pin_config (void){
+void left_encoder_pin_config (void)
+{
 	DDRE  = DDRE & 0xEF;  //Set the direction of the PORTE 4 pin as input
 	PORTE = PORTE | 0x10; //Enable internal pull-up for PORTE 4 pin
 }
@@ -204,7 +193,8 @@ void left_encoder_pin_config (void){
 * Example Call:		right_encoder_pin_config()
 *
 */
-void right_encoder_pin_config (void){
+void right_encoder_pin_config (void)
+{
 	DDRE  = DDRE & 0xDF;  //Set the direction of the PORTE 4 pin as input
 	PORTE = PORTE | 0x20; //Enable internal pull-up for PORTE 4 pin
 }
@@ -217,7 +207,8 @@ void right_encoder_pin_config (void){
 * Example Call:		motor_port_init()
 *
 */
-void motor_port_init(){
+void motor_port_init()
+{
 	motion_pin_config(); //robot motion pins config
 	left_encoder_pin_config(); //left encoder pin config
 	right_encoder_pin_config(); //right encoder pin config
@@ -231,8 +222,8 @@ void motor_port_init(){
 * Example Call:		left_position_encoder_interrupt_init()
 *
 */
-void left_position_encoder_interrupt_init (void){ //Interrupt 4 enable
-
+void left_position_encoder_interrupt_init (void) //Interrupt 4 enable
+{
 	cli(); //Clears the global interrupt
 	EICRB = EICRB | 0x02; // INT4 is set to trigger with falling edge
 	EIMSK = EIMSK | 0x10; // Enable Interrupt INT4 for left position encoder
@@ -247,7 +238,8 @@ void left_position_encoder_interrupt_init (void){ //Interrupt 4 enable
 * Example Call:		right_position_encoder_interrupt_init()
 *
 */
-void right_position_encoder_interrupt_init (void){ //Interrupt 5 enable
+void right_position_encoder_interrupt_init (void) //Interrupt 5 enable
+{
 	cli(); //Clears the global interrupt
 	EICRB = EICRB | 0x08; // INT5 is set to trigger with falling edge
 	EIMSK = EIMSK | 0x20; // Enable Interrupt INT5 for right position encoder
@@ -276,7 +268,6 @@ ISR(INT4_vect){
 	ShaftCountLeft++;  //increment left shaft position count
 }
 
-
 /*
 * Function Name:	linear_distance_mm
 * Input:			int DistanceInMM
@@ -288,16 +279,16 @@ ISR(INT4_vect){
 void linear_distance_mm(unsigned int DistanceInMM){
 	float ReqdShaftCount = 0;
 	unsigned long int ReqdShaftCountInt = 0;
-	ReqdShaftCount = DistanceInMM / 5.338; // division by resolution to get shaft count
-	ReqdShaftCountInt = (unsigned long int) ReqdShaftCount;
-	ShaftCountRight = 0;
-	while(1){
+	ReqdShaftCountInt = (unsigned long int) DistanceInMM / 5.338;  //Division by resolution to get shaft count
+	ShaftCountRight = 0;                    //reset shaft counts
+	while(1){                               //execute till given position is reached
 		if(ShaftCountRight > ReqdShaftCountInt){
 			break;
 		}
 	}
 	stop();
 }
+
 
 /*
 * Function Name:	angle_rotate
@@ -308,14 +299,12 @@ void linear_distance_mm(unsigned int DistanceInMM){
 *
 */
 void angle_rotate(unsigned int Degrees){
-	float ReqdShaftCount = 0;
 	unsigned long int ReqdShaftCountInt = 0;
-	ReqdShaftCount = (float) Degrees/ 2.045; // division by resolution to get shaft count
-	ReqdShaftCountInt = (unsigned int) ReqdShaftCount;
-	ShaftCountRight = 0;
+	ReqdShaftCountInt = (unsigned int)( Degrees/ 2.045); // division by resolution to get shaft count;
+	ShaftCountRight = 0;                              //reset shaft counts
 	ShaftCountLeft = 0;
-	while (1){
-		if((ShaftCountRight >= ReqdShaftCountInt) | (ShaftCountLeft >= ReqdShaftCountInt))//| Center_white_line > 100)
+	while (1){                                        //execute till given position is reached
+		if((ShaftCountRight >= ReqdShaftCountInt) | (ShaftCountLeft >= ReqdShaftCountInt))
 		break;
 	}
 	stop(); //Stop robot

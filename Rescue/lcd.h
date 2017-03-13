@@ -5,7 +5,7 @@
 * Filename: 		lcd.h
 * Functions: 		init_ports () , lcd_reset () , lcd_init () , lcd_wr_command (unsigned char) ,
 *					lcd_wr_char () , lcd_line1 () , lcd_line2 () , lcd_string(char*)
-* Global Variables:	NONE
+* Global Variables:	temp, unit, tens, hundred, thousand, million
 *
 */
 
@@ -42,7 +42,7 @@ unsigned int million;
 	* Input:			NONE
 	* Output:			NONE
 	* Logic:			Function to configure LCD port and setting all LCD pins except
-                PORTC to logic 0
+                		PORTC to logic 0
 	* Example Call:		servoPan_pin_config()
 	*
 	*/
@@ -116,7 +116,6 @@ void lcd_init()
 	lcd_wr_command(0x06);
 	lcd_wr_command(0x0E);
 	lcd_wr_command(0x80);
-
 }
 
 /*
@@ -292,7 +291,7 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 * Input:			NONE
 * Output:			NONE
 * Logic:			Function to clear screen
-* Example Call:		lcd_cursor(char r,char c, unsigned int v, int d)
+* Example Call:		lcd_clear()
 */
 void lcd_clear(){
 	lcd_wr_command(0x01);

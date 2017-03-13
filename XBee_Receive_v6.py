@@ -1,8 +1,8 @@
-'''
+ '''
      Project Name:     e-Yantra Project
-     Author List:      Joshua Koyeerath, Shaun Kollannur
+     Author List:      Joshua Koyeerath, Shaun Kollannur 
      Filename:         XBee_Receive_v6.py
-
+     
      Functions:        initialize_var(),
                        open_serialComm(port),
                        output_image(x,y,z,htmlfile),
@@ -15,14 +15,14 @@
                        targetVictim(fname),
                        retracePath(fname),
                        moveRescueBot(fname)
-
+                       
      Global Variables: x_dist,
                        y_dist,
                        new_theta,
                        fplot_clean,
                        frecord_clean
 
-'''
+ '''
 
 import plotly.plotly as py
 import plotly.offline as of
@@ -54,7 +54,7 @@ def initialize_var():
     r = range(0)
     # Intialize arrays for x, y and z respectively
     x = range(0)
-    y = range(0)
+    y = range(0)   
     z = range(0)
     theta = range(0)
     phi = range(0)
@@ -84,7 +84,7 @@ def open_serialComm(port):
 '''
     Function Name:    output_image
     Input:            x, y, z, htmlfile
-    Output:           Graphical Output
+    Output:           Graphical Output 
     Logic:            Output plots using the plot.ly python library
     Example call:     output_image(x,y,z,htmlfile)
 '''
@@ -118,7 +118,7 @@ def createPlan(plot_fname,z_plan):
     plot_file = open(plot_fname,'r')
     zplot_file = open(z_plan,'w')
 
-    for line in plot_file:
+    for line in plot_file: 
         line = line.split('\n')
         r2temp = line[0].split(',')
         ztemp = float(r2temp[2])
@@ -130,7 +130,7 @@ def createPlan(plot_fname,z_plan):
     print 'Filtering Complete !!'
     plot_file.close()
     zplot_file.close()
-
+    
 '''
     Function Name:    deleteContent
     Input:            pfile (Filename)
@@ -183,7 +183,7 @@ def moveBot(frecord_clean):
 
     frecord_clean += 1
 
-    i = 0
+    i = 0     
     while(1):
         outgoing = raw_input('\nEnter number to transmit : ')
         serial_port.write(outgoing)
@@ -202,9 +202,9 @@ def moveBot(frecord_clean):
                 continue
         path_file.write(outgoing)
         print 'Written in file'
-
+            
     path_file.close()
-
+    
     return frecord_clean
 
 '''
@@ -227,21 +227,21 @@ def scanArena(fplot_clean):
     fplot_clean += 1
 
     print 'Waiting for inputs.....\n'
-
+        
     while(1):
-
+        
         r.extend([60 + (int(serial_port.read().encode('hex'),16) * 256 + int(serial_port.read().encode('hex'),16))])
         theta.extend([int(serial_port.read().encode('hex'),16)])
         phi.extend([int(serial_port.read().encode('hex'),16)])
-
+        
         print 'Phi : ',phi[-1],'\t'
-
+        
         if(theta[-1] == 201 and phi[-1] == 201):
             # Indicates end of scanning
             break
         if(r[-1] > 1500):
             continue
-
+            
         # Convert polar co-ordinates to cartesian and fill in respective arrays
         print 'Theta : ',theta[-1],' R : ',r[-1],'\t'
         x.extend([x_dist + r[-1] * math.cos(math.radians((360 - new_theta)%360 + theta[-1])) * math.sin(math.radians(140-phi[-1]))])
@@ -262,7 +262,7 @@ def scanArena(fplot_clean):
     plot_file.close()
 
     x,y,z = fillXYZ('3DPlot.txt')
-
+    
     print 'Output the received points'
     output_image(x,y,z,'basic-scatter.html')
 
@@ -319,8 +319,8 @@ def shiftOfOrigin(lines_accessed,theta_temp,x_temp,y_temp,input_file):
 
 def targetVictim(fname):
     path_file = open(fname,'a+')
-
-    i = 0
+    
+    i = 0     
     while(1):
         outgoing = raw_input('\nEnter number to transmit : ')
         if(outgoing == ";"):
@@ -377,7 +377,7 @@ def retracePath(fname):
     Output:           The Rescue bot has reached the position were the victim is present
     Logic:            The Rescue bot reads the record file to reach to the victim
     Example call:     moveRescueBot(fname)
-'''
+'''    
 
 def moveRescueBot(fname):
     path_file = open(fname,'r')

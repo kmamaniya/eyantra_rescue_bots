@@ -3,9 +3,10 @@
 * Project Name: 	e-Yantra Project
 * Author List: 		Sen Rajan Mathew
 * Filename: 		motor.h
-* Functions: 		motion_pin_config, timer5_init, motion_set, forward, back, left, right, soft_left,
- 								soft_right, stop, soft_right, velocity, left_encoder_pin_config, right_encoder_pin_config,
-								linear_distance_mm, forward_mm, backward_mm, angle_rotate, left_degrees, right_degrees
+* Functions: 		motion_pin_config(), timer5_init(), motion_set(), forward(), back(), soft_left(),
+ 								soft_right2(), stop(), soft_right(),soft_left2(), motor_velocity(), left_encoder_pin_config(), right_encoder_pin_config(),
+								linear_distance_mm(), angle_rotate(), ISR for INT4, ISR for INT5
+* Global variables:    ShaftCountLeft, ShaftCountRight, Degrees, left_dir, right_dir, checkBit
 *
 */
 #include <avr/io.h>
@@ -80,7 +81,7 @@ void motion_set (unsigned char Direction){
 *
 */
 void forward (){
-	motion_set(0x06);
+	motion_set(0x06);        //both wheel forward
 }
 
 /*
@@ -92,32 +93,7 @@ void forward (){
 *
 */
 void back (){
-	motion_set(0x09);
-}
-/*
-* Function Name:	left
-* Input:			NONE
-* Output:			NONE
-* Logic:			To move bot to the left
-* Example Call:		left()
-*
-*/
-void left (void)
-{
-	motion_set(0x05);
-}
-
-/*
-* Function Name:	right
-* Input:			NONE
-* Output:			NONE
-* Logic:			To move bot to the right
-* Example Call:		left()
-*
-*/
-void right (void)
-{
-	motion_set(0x0A);
+	motion_set(0x09);     //both wheel backwards
 }
 
 /*
@@ -129,15 +105,33 @@ void right (void)
 *
 */
 void soft_left (void){
-	motion_set(0x04);
+	motion_set(0x04);          //right wheel forward, left wheel stationary
 }
 
-void soft_left2(){
-	motion_set(0x01);
+
+/*
+* Function Name:	soft_left2()
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the left using left wheel backward, right wheel is stationary
+* Example Call:		soft_left2()
+*
+*/
+void soft_left2(){   
+	motion_set(0x01); //Left wheel backward, Right wheel stationary
 }
 
+
+/*
+* Function Name:	soft_right2
+* Input:			NONE
+* Output:			NONE
+* Logic:			To move bot to the right when right wheel backward, left wheel is stationary
+* Example Call:		soft_right2()
+*
+*/
 void soft_right2(){
-	motion_set(0x08);
+	motion_set(0x08);         //right wheel backward, left wheel stationary
 }
 
 /*
@@ -149,7 +143,7 @@ void soft_right2(){
 *
 */
 void stop(){
-	motion_set(0x00);
+	motion_set(0x00);      //stop both wheels
 }
 
 /*
@@ -285,15 +279,10 @@ ISR(INT4_vect){
 void linear_distance_mm(unsigned int DistanceInMM){
 	float ReqdShaftCount = 0;
 	unsigned long int ReqdShaftCountInt = 0;
-
-	ReqdShaftCount = DistanceInMM / 5.338; // division by resolution to get shaft count
-	ReqdShaftCountInt = (unsigned long int) ReqdShaftCount;
-
-	ShaftCountRight = 0;
-	while(1)
-	{
-		if(ShaftCountRight > ReqdShaftCountInt)
-		{
+	ReqdShaftCountInt = (unsigned long int) DistanceInMM / 5.338;  //Division by resolution to get shaft count
+	ShaftCountRight = 0;                    //reset shaft counts
+	while(1){                               //execute till given position is reached
+		if(ShaftCountRight > ReqdShaftCountInt){
 			break;
 		}
 	}
@@ -310,14 +299,12 @@ void linear_distance_mm(unsigned int DistanceInMM){
 *
 */
 void angle_rotate(unsigned int Degrees){
-	float ReqdShaftCount = 0;
 	unsigned long int ReqdShaftCountInt = 0;
-	ReqdShaftCount = (float) Degrees/ 2.045; // division by resolution to get shaft count
-	ReqdShaftCountInt = (unsigned int) ReqdShaftCount;
-	ShaftCountRight = 0;
+	ReqdShaftCountInt = (unsigned int)( Degrees/ 2.045); // division by resolution to get shaft count;
+	ShaftCountRight = 0;                              //reset shaft counts
 	ShaftCountLeft = 0;
-	while (1){
-		if((ShaftCountRight >= ReqdShaftCountInt) | (ShaftCountLeft >= ReqdShaftCountInt))//| Center_white_line > 100)
+	while (1){                                        //execute till given position is reached
+		if((ShaftCountRight >= ReqdShaftCountInt) | (ShaftCountLeft >= ReqdShaftCountInt))
 		break;
 	}
 	stop(); //Stop robot
