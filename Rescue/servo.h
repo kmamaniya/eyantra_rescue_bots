@@ -1,17 +1,55 @@
+/*
+*
+* Project Name: 	e-Yantra Project
+* Author List: 		Karan Mamaniya
+* Filename: 		servo.h
+* Functions: 		servoPan_pin_config () , servoTilt_pin_config () , timer1_init () , servo_init () ,
+*					servoPan (unsigned char) , servoTilt(unsigned char) , servoPan_free () , servoTilt_free()
+* Global Variables:	NONE
+*
+*/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+/*
+* Function Name:	servoRight_pin_config
+* Input:			NONE
+* Output:			NONE
+* Logic:			DDRB(DIRECTION REGISTER B) SET as output
+							PORTB 6th bit IS SET TO LOGIC 1
+							Configure PORTB 6 pin for right servo motor operation
+* Example Call:		servoRight_pin_config()
+*
+*/
 void servoRight_pin_config ()	{
 	DDRB  = DDRB | 0x80;  //making PORTB 7 pin output
 	PORTB = PORTB | 0x80; //setting PORTB 7 pin to logic 1
 }
 
+/*
+* Function Name:	servoLeft_pin_config
+* Input:			NONE
+* Output:			NONE
+* Logic:			DDRB(DIRECTION REGISTER B) SET as output
+							PORTB 6th bit IS SET TO LOGIC 1
+							Configure PORTB 6 pin for left servo motor operation
+* Example Call:		servoLeft_pin_config()
+*
+*/
 void servoLeft_pin_config ()	{
 	DDRB = DDRB | 0x40;		//making PORTB 6 pin output
 	PORTB = PORTB | 0x40;	//setting PORTB 6 pin to logic 1
 }
 
+/*
+* Function Name:	timer1_init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Initializing timer 1 in 10 bit fast PWM Mode
+* Example Call:		servoTilt_pin_config()
+*
+*/
 void timer1_init ()	{
 	TCCR1B = 0x00; //stop
 	TCNT1H = 0xFC; //Counter high value to which OCR1xH value is to be compared with
@@ -22,7 +60,7 @@ void timer1_init ()	{
 	OCR1BL = 0xFF;	//Output Compare Register low Value For servo 2
 	OCR1CH = 0x03;	//Output compare Register high value for servo 3
 	OCR1CL = 0xFF;	//Output Compare Register low Value For servo 3
-	ICR1H  = 0x03;	
+	ICR1H  = 0x03;
 	ICR1L  = 0xFF;
 	TCCR1A = 0xAB; /*{COM1A1=1, COM1A0=0; COM1B1=1, COM1B0=0; COM1C1=1 COM1C0=0}
  					For Overriding normal port functionality to OCRnA outputs.
@@ -35,7 +73,7 @@ void timer1_init ()	{
 	* Function Name:	servo_init
 	* Input:			NONE
 	* Output:			NONE
-	* Logic:			Initialize the ports for the server motor operations 
+	* Logic:			Initialize the ports for the server motor operations
 	* Example Call:		servo_init()
 	*
 	*/
@@ -45,6 +83,14 @@ void servo_init ()	{
 	timer1_init();
 }
 
+/*
+* Function Name:	servoRight
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to rotate right servo by a specified angle
+* Example Call:		servoRight(unsigned char)
+*
+*/
 void servoRight (unsigned char degrees)	{
 	float PositionServo = 0;
 	PositionServo = ((float)degrees / 1.86) + 35.0;
@@ -52,6 +98,14 @@ void servoRight (unsigned char degrees)	{
 	OCR1CL = (unsigned char) PositionServo;
 }
 
+/*
+* Function Name:	servoLeft
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to rotate left servo by a specified angle
+* Example Call:		servoLeft(unsigned char)
+*
+*/
 void servoLeft(unsigned char degrees)	{
 	float PositionTiltServo = 0;
 	PositionTiltServo = ((float)degrees / 1.86) + 35.0;
@@ -59,11 +113,33 @@ void servoLeft(unsigned char degrees)	{
 	OCR1BL = (unsigned char) PositionTiltServo;
 }
 
+/*
+* Function Name:	servoRight_free
+* Input:			NONE
+* Output:			NONE
+* Logic:			servoRight_free functions unlocks the  right servo motor from the any angle and make them free
+							by giving 100% duty cycle at the PWM. This function can be used to reduce the power
+							consumption of the motor if it is holding load against the gravity.
+							--->makes right servo free rotating
+* Example Call:		servoRight_free()
+*
+*/
 void servoRight_free ()	{
 	OCR1CH = 0x03;
 	OCR1CL = 0xFF; //Servo 3 off
 }
 
+/*
+* Function Name:	servoLeft_free
+* Input:			NONE
+* Output:			NONE
+* Logic:			servoLeft_free functions unlocks the left servo motor from the any angle and make them free
+							by giving 100% duty cycle at the PWM. This function can be used to reduce the power
+							consumption of the motor if it is holding load against the gravity.
+							--->makes left servo free rotating
+* Example Call:		servoLeft_free()
+*
+*/
 void servoLeft_free()	{ //makes servo 2 free rotating
 	OCR1BH = 0x03;
 	OCR1BL = 0xFF; //Servo 2 off

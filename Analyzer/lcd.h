@@ -42,7 +42,7 @@ unsigned int million;
 	* Input:			NONE
 	* Output:			NONE
 	* Logic:			Function to configure LCD port and setting all LCD pins except
-                PORTC to logic 0
+                		PORTC to logic 0
 	* Example Call:		servoPan_pin_config()
 	*
 	*/
@@ -116,7 +116,6 @@ void lcd_init()
 	lcd_wr_command(0x06);
 	lcd_wr_command(0x0E);
 	lcd_wr_command(0x80);
-
 }
 
 /*
@@ -287,6 +286,13 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 
 }
 
+/*
+* Function Name:	lcd_clear
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to clear screen
+* Example Call:		lcd_clear()
+*/
 void lcd_clear(){
 	lcd_wr_command(0x01);
 }

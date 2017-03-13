@@ -1,3 +1,11 @@
+/*
+*
+* Project Name: 	e-Yantra Project
+* Author List: 		Karan Mamaniya
+* Filename: 		main.c
+* Functions: 		init() , main() 
+* Global Variables:	linear[], angle[], moves
+*/
 #define F_CPU 14745600
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -12,6 +20,14 @@ int linear[100];
 int angle[100];
 int moves;
 
+/*
+* Function Name:	init
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to initialize motor, lcd, zigbee and ultrasonic sensor
+* Example Call:		init()
+*
+*/
 void init(){
 	cli();
 	lcd_init();
@@ -23,11 +39,18 @@ void init(){
 	motor_velocity(250,254);
 }
 
+/*
+* Function Name:	main
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to initialize motor, lcd, zigbee and ultrasonic sensor
+* Example Call:		main()
+*
+*/
 int main(void)
 {
 	init();
 	release();
-	/* Replace with your application code */
 	
     while (1) 
     {
@@ -40,10 +63,15 @@ int main(void)
 		while(serial_flag!=1)
 			_delay_ms(1000);
 			switch(serial_data){
-				case '1': move();break;
-				case '2': grab();break;
-				case '3': return_home();break;
-				case '4': release();break;
+				case '1': move();break;				// Calls function to move bot
+
+				case '2': grab();break;				// Calls function to grab human or debris
+
+				case '3': return_home();break;		// Calls function to return to home location
+
+				case '4': release();break;			/* Calls function to release hold of human
+														or debris*/
+				
 				default: break;
 			}
 			clear_serial_data();

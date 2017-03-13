@@ -1,3 +1,13 @@
+/*
+*
+* Project Name: 	e-Yantra Project
+* Author List: 		Karan Mamanyia
+* Filename: 		rescue.h
+* Functions: 		getNumber, get_distance, get_angle, get_movement, move, grab, release,
+					return_home
+* Global Variables: linear_movement[], angle_movement[], moves
+*
+*/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -6,10 +16,24 @@ int linear_movement[100];
 int angle_movement[100];
 int moves;
 
+/*
+* Function Name:	getNumber
+* Input:			char
+* Output:			int
+* Logic:			Get individual 8 bit data from control center
+* Example call:		getNumber('1')
+*/
 int getNumber(char data){
 	return data-'0';		//Obtain Decimal from ASCII input
 }
 
+/*
+* Function Name:	get_distance
+* Input:			NONE
+* Output:			returns distance in mm
+* Logic:			Get the distance to be travelled from the control center
+* Example call:		get_distance()
+*/
 int get_distance(){
 	lcd_clear();					//Clears lcd
 	lcd_cursor(1,1);				//Sets lcd cursor at 1,1 before writing on lcd
@@ -30,6 +54,13 @@ int get_distance(){
 	return move_distance;
 }
 
+/*
+* Function Name:	get_angle
+* Input:			NONE
+* Output:			returns angle in degrees
+* Logic:			Get the angle to be travelled from the control center
+* Example call:		get_angle()
+*/
 int get_angle(){
 	lcd_clear();										//Clears lcd
 	int angle=0;										//Displaying "Enter angle" on lcd screen
@@ -48,6 +79,13 @@ int get_angle(){
 	return angle;
 }
 
+/*
+* Function Name:	get_movement
+* Input:			NONE
+* Output:			int
+* Logic:			Get movement to be travelled by using the distance and angle
+* Example call:		get_movement()
+*/
 int get_movement(){
 	int moves=0;
 	while(serial_data != ';'){
@@ -59,6 +97,14 @@ int get_movement(){
 	return moves;
 }
 
+/*
+* Function Name:	move
+* Input:			NONE
+* Output:			NONE
+* Logic:			Manoeuvre the bot from 3d analysis
+					by deciding the distance and angle to be travelled
+* Example call:		move()
+*/
 void move(){
 	int count=0;
 	moves=get_movement();
@@ -77,6 +123,13 @@ void move(){
 	}
 }
 
+/*
+* Function Name:	grab
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to grab object or human
+* Example call:		grab()
+*/
 void grab(){
 	//grabbing
 	servoRight(70);
@@ -86,6 +139,13 @@ void grab(){
 	servoLeft_free();
 }
 
+/*
+* Function Name:	release
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to release object or human
+* Example call:		release()
+*/
 void release(){
 	//releasing
 	servoRight(0);
@@ -95,6 +155,14 @@ void release(){
 	servoLeft_free();
 }
 
+/*
+* Function Name:	return_home
+* Input:			NONE
+* Output:			NONE
+* Logic:			The bot uses this function to return
+					retrace its path
+* Example call:		return_home()
+*/
 void return_home(){
 	int count = moves-1;
 	while(count>=0){

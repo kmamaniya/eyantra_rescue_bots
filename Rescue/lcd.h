@@ -287,6 +287,13 @@ void lcd_print (char row, char coloumn, unsigned int value, int digits)
 
 }
 
+/*
+* Function Name:	lcd_clear
+* Input:			NONE
+* Output:			NONE
+* Logic:			Function to clear screen
+* Example Call:		lcd_cursor(char r,char c, unsigned int v, int d)
+*/
 void lcd_clear(){
 	lcd_wr_command(0x01);
 }
