@@ -1,7 +1,7 @@
 # eyantra_rescue_bots
-##Safety, Security and Rescue Robot
+## Safety, Security and Rescue Robot
 
-####Abstract
+#### Abstract
 <pre><code>Rescue operations are often laborious and dangerous to human life. Thus, we are deploying an Analyzer robot
 to assess the disaster stuck zone for possible targets/victims. The information collected by this robot
 is analysed and a 3D view of the localised is generated at the base station and the pin pointed location
